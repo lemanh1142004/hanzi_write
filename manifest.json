@@ -9,5 +9,19 @@
   "start_url": "/hanzi_write/",
   "theme_color": "#ffffff",
   "id": "/hanzi_write/",
-  "description": "Ứng dụng luyện viết chữ Hán cá nhân"
+  "description": "Ứng dụng luyện viết chữ Hán cá nhân",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }
