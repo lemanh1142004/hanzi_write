@@ -21,12 +21,13 @@ const HanziWriterService = {
         drawingColor: '#dc2626',  // Màu nét người dùng tự vẽ (Đỏ thư pháp)
         drawingWidth: 16,
         showHintAfterMisses: 2,   // Hiện gợi ý nếu vẽ sai 2 lần
-        highlightOnComplete: true,
+        highlightOnComplete: false, // Tắt hiệu ứng nháy sáng để không bị khựng/dừng 2 giây
         highlightColor: '#16a34a' // Màu xanh lá khi hoàn thành
     },
 
     isQuizMode: false,
     outlineVisible: true,
+    loop: true, // Mặc định lặp lại vô tận liên tục
 
     /**
      * Khởi tạo hoặc tải một chữ Hán mới lên khung vẽ
@@ -57,6 +58,8 @@ const HanziWriterService = {
                 showOutline: this.outlineVisible,
                 onLoadCharDataSuccess: (data) => {
                     if (onLoaded) onLoaded(data);
+                    // Tự động viết ngay khi tải xong dữ liệu nét
+                    this.animate();
                 },
                 onLoadCharDataError: (err) => {
                     console.error(`Không thể tải dữ liệu nét cho chữ: ${char}`, err);
@@ -69,7 +72,7 @@ const HanziWriterService = {
                 }
             });
 
-            // Tự động phát hoạt ảnh khi mở chữ mới
+            // Tự động phát hoạt ảnh ngay lập tức khi chọn hoặc tìm xong chữ
             this.animate();
         } catch (e) {
             console.error('Lỗi khi khởi tạo HanziWriter:', e);
@@ -77,21 +80,26 @@ const HanziWriterService = {
     },
 
     /**
-     * Chạy hoạt ảnh vẽ từng nét chữ
+     * Chạy hoạt ảnh vẽ từng nét chữ và tự động lặp lại liên tục từ đầu (0 giây chờ)
      */
     animate(onComplete = null) {
-        if (!this.writer) return;
-        this.isQuizMode = false;
+        if (!this.writer || this.isQuizMode) return;
 
         // Nếu đang ở quiz mode thì hủy
         try {
             this.writer.cancelQuiz();
         } catch (e) {}
 
+        const targetChar = this.currentCharacter;
         this.writer.showOutline();
         this.writer.animateCharacter({
             onComplete: () => {
                 if (onComplete) onComplete();
+
+                // Lặp lại vô tận liên tục ngay lập tức (thời gian chờ = 0 giây)
+                if (this.loop && !this.isQuizMode && this.currentCharacter === targetChar) {
+                    this.animate(onComplete);
+                }
             }
         });
     },

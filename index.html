@@ -685,7 +685,9 @@
 
             if (tabName === 'practice') {
                 document.getElementById('sectionPractice').classList.remove('hidden');
-                if (state.writer && !state.isQuizWritingActive) state.writer.animateCharacter();
+                if (state.writer && !state.isQuizWritingActive) {
+                    playInfiniteAnimation(state.currentChar);
+                }
             } else if (tabName === 'saved') {
                 document.getElementById('sectionSaved').classList.remove('hidden');
                 renderSavedWordsList();
@@ -810,14 +812,39 @@
                     drawingColor: '#dc2626',
                     drawingWidth: 16,
                     showHintAfterMisses: 2,
-                    highlightOnComplete: true,
-                    highlightColor: '#16a34a'
+                    highlightOnComplete: false, // Bỏ hoàn toàn hiệu ứng nháy để không bị dừng 2 giây
+                    onLoadCharDataSuccess: () => {
+                        // Tự động viết ngay lập tức khi tải xong nét
+                        playInfiniteAnimation(char);
+                    },
+                    onLoadCharDataError: (err) => {
+                        console.error('Lỗi tải dữ liệu nét:', err);
+                        targetEl.innerHTML = `<div class="text-4xl font-serif text-slate-700">${char}</div>`;
+                    }
                 });
 
-                state.writer.animateCharacter();
+                // Tự động kích hoạt viết ngay lập tức khi chọn hoặc tìm xong
+                playInfiniteAnimation(char);
             } catch (e) {
                 targetEl.innerHTML = `<div class="text-4xl font-serif text-slate-700">${char}</div>`;
             }
+        }
+
+        // Tự động lặp lại liên tục từ đầu ngay lập tức (thời gian chờ = 0 giây)
+        function playInfiniteAnimation(char) {
+            if (!state.writer || state.isQuizWritingActive) return;
+            // Dừng vòng lặp nếu người dùng đã chuyển sang chữ khác
+            if (state.currentChar !== char) return;
+
+            state.writer.showOutline();
+            state.writer.animateCharacter({
+                onComplete: () => {
+                    // Lặp lại vô tận không dừng (thời gian chờ = 0 giây, bỏ hoàn toàn khoảng dừng 2s)
+                    if (!state.isQuizWritingActive && state.currentChar === char) {
+                        playInfiniteAnimation(char);
+                    }
+                }
+            });
         }
 
         // Cập nhật trạng thái nút "Lưu từ này"
@@ -892,6 +919,7 @@
             if (state.isQuizWritingActive) {
                 state.writer.cancelQuiz();
                 resetQuizButtonUI();
+                playInfiniteAnimation(state.currentChar);
             } else {
                 state.isQuizWritingActive = true;
                 quizContainer.classList.add('quiz-active');
@@ -1365,7 +1393,7 @@
             // Nút Chạy lại nét & Tự tập viết
             document.getElementById('btnReplay').addEventListener('click', () => {
                 resetQuizButtonUI();
-                if (state.writer) state.writer.animateCharacter();
+                playInfiniteAnimation(state.currentChar);
             });
 
             document.getElementById('btnQuiz').addEventListener('click', toggleInteractiveWritingQuiz);

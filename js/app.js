@@ -358,6 +358,7 @@
             // Hủy quiz, quay về bình thường
             resetQuizUI();
             HanziWriterService.cancelQuiz();
+            HanziWriterService.animate();
         } else {
             // Bắt đầu quiz
             state.isQuizActive = true;
