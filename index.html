@@ -21,7 +21,6 @@
     </script>
 
     <!-- Google Fonts -->
-    <!-- Favicon & App Icon -->
     <link rel="icon" type="image/svg+xml" href="icon.svg">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="manifest" href="./manifest.json">
@@ -29,53 +28,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
 
+    <!-- Styles tùy biến nội bộ -->
+    <link rel="stylesheet" href="css/style.css">
+
     <!-- Thư viện vẽ nét chữ Hanzi Writer & pinyin-pro -->
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.16.0/dist/index.js"></script>
-
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .hanzi-font { font-family: 'Noto Serif SC', serif; }
-
-        /* Khung kẻ Mễ Tự Cách (米字格) truyền thống */
-        .mizige-box {
-            position: relative;
-            background-color: #ffffff;
-            border: 2.5px solid #ef4444;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-            touch-action: none;
-            user-select: none;
-        }
-        .mizige-svg {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        #character-target {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #character-target svg { display: block; }
-
-        @keyframes quiz-pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
-            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
-        }
-        .quiz-active {
-            animation: quiz-pulse 2s infinite;
-            border-color: #dc2626 !important;
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-blue-100 selection:text-blue-700">
 
@@ -87,23 +45,26 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h1 class="text-lg font-bold text-slate-900 tracking-tight">HanziLab</h1>
-                        <span class="text-[10px] uppercase font-bold tracking-wider bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded-full">v2.0 Object Storage</span>
+                        <span class="text-[10px] uppercase font-bold tracking-wider bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded-full">v2.1 Modular</span>
                     </div>
                     <p class="text-xs text-slate-500">Luyện viết chữ Hán & Quản lý cụm từ vựng thông minh</p>
                 </div>
             </div>
 
             <!-- Tab Navigation Buttons -->
-            <nav class="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/80">
-                <button id="tabBtnPractice" class="tab-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-white text-blue-600 shadow-xs" data-tab="practice">
+            <nav class="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/80 overflow-x-auto custom-scrollbar">
+                <button id="tabBtnPractice" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white text-blue-600 shadow-xs whitespace-nowrap cursor-pointer" data-tab="practice">
                     <span>✍️ Luyện viết</span>
                 </button>
-                <button id="tabBtnSaved" class="tab-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition" data-tab="saved">
+                <button id="tabBtnSaved" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition whitespace-nowrap cursor-pointer" data-tab="saved">
                     <span>📚 Từ đã lưu</span>
                     <span id="savedBadgeCount" class="hidden bg-amber-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">0</span>
                 </button>
-                <button id="tabBtnQuiz" class="tab-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition" data-tab="quiz">
-                    <span>🎯 Quiz ôn tập</span>
+                <button id="tabBtnQuiz" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition whitespace-nowrap cursor-pointer" data-tab="quiz">
+                    <span>🎯 Trắc nghiệm</span>
+                </button>
+                <button id="tabBtnWriteTest" class="tab-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition whitespace-nowrap cursor-pointer" data-tab="write-test">
+                    <span>📝 Kiểm tra viết</span>
                 </button>
             </nav>
         </div>
@@ -171,11 +132,15 @@
                             <h2 id="currentWordDisplay" class="text-2xl sm:text-3xl font-black text-slate-900 hanzi-font">你好</h2>
                             <span id="currentWordPinyin" class="text-base sm:text-lg font-bold text-blue-600">nǐ hǎo</span>
                         </div>
-                        <!-- Nghĩa của từ (Có thể chỉnh sửa) -->
+                        <!-- Nghĩa của từ (Mở khóa cho phép sửa tự do) -->
                         <div class="flex items-center gap-1.5 mt-1">
                             <span class="text-xs text-slate-500 font-medium">Nghĩa:</span>
-                            <input type="text" id="inputMeaning" placeholder="Nhập nghĩa tiếng Việt (VD: Xin chào)..." 
-                                class="text-xs font-semibold text-slate-700 bg-white/80 hover:bg-white focus:bg-white border border-slate-200 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 transition w-56">
+                            <div class="relative flex items-center">
+                                <input type="text" id="inputMeaning" placeholder="Nhập nghĩa tiếng Việt..." 
+                                    class="text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg pl-2.5 pr-7 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 w-56 select-text transition"
+                                    title="Bấm vào để chỉnh sửa nghĩa của từ">
+                                <span class="absolute right-2 text-slate-400 text-[11px] pointer-events-none select-none" title="Có thể chỉnh sửa nghĩa">✏️</span>
+                            </div>
                         </div>
                     </div>
 
@@ -183,12 +148,12 @@
                     <div class="flex items-center gap-2 self-end sm:self-center">
                         <button id="btnAudioWord" title="Phát âm toàn bộ cụm từ" class="p-2.5 text-slate-600 hover:text-blue-600 hover:bg-white rounded-xl transition border border-slate-200 bg-white shadow-2xs">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                             </svg>
                         </button>
 
                         <!-- NÚT LƯU CẢ CỤM TỪ VÀO LOCALSTORAGE -->
-                        <button id="btnSaveWord" class="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold rounded-xl border transition shadow-2xs bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100">
+                        <button id="btnSaveWord" class="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold rounded-xl border transition shadow-2xs bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 cursor-pointer">
                             <svg id="saveIcon" class="w-4 h-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                             </svg>
@@ -200,16 +165,21 @@
                 <!-- TABS CHỌN KÝ TỰ ĐỂ LUYỆN VIẾT NÉT -->
                 <div class="w-full mb-3">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-semibold text-slate-500">Chọn chữ cái trong cụm từ để luyện viết:</span>
+                        <span class="text-xs font-semibold text-slate-500">Chọn chữ cái trong cụm để luyện viết:</span>
                         <span id="charCountLabel" class="text-xs text-slate-400 font-medium">2 chữ</span>
                     </div>
-                    <div id="characterTabs" class="flex flex-wrap gap-2 justify-center"></div>
+                    <div id="characterTabs" class="character-tabs-container flex flex-wrap gap-2 justify-center"></div>
                 </div>
 
-                <!-- Thông tin chữ cái đơn lẻ đang vẽ -->
+                <!-- Thông tin chữ cái đơn lẻ đang vẽ kèm nút nghe riêng chữ cái -->
                 <div class="flex items-center gap-2 mb-2 text-xs text-slate-500">
                     <span>Đang vẽ chữ: <strong id="currentCharDisplay" class="text-blue-600 font-bold hanzi-font text-base">你</strong></span>
                     <span>• Pinyin: <strong id="currentCharPinyin" class="text-slate-800 font-bold">nǐ</strong></span>
+                    <button id="btnAudioChar" title="Phát âm chữ này" class="p-1 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-md transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Thông báo Quiz tự viết -->
@@ -232,7 +202,7 @@
 
                 <!-- THANH ĐIỀU KHIỂN NÉT -->
                 <div class="flex flex-wrap items-center justify-center gap-2 w-full max-w-md pt-1">
-                    <button id="btnReplay" class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-blue-700 transition shadow-xs">
+                    <button id="btnReplay" class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-blue-700 transition shadow-xs cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -240,21 +210,21 @@
                         <span>Chạy lại nét</span>
                     </button>
 
-                    <button id="btnQuiz" class="inline-flex items-center gap-1.5 bg-rose-50 text-rose-700 border border-rose-200 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-rose-100 transition shadow-2xs">
+                    <button id="btnQuiz" class="inline-flex items-center gap-1.5 bg-rose-50 text-rose-700 border border-rose-200 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-rose-100 transition shadow-2xs cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
                         <span id="quizBtnText">Tự tập viết</span>
                     </button>
 
-                    <button id="btnToggleOutline" class="inline-flex items-center gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-2 rounded-xl text-xs font-medium transition">
+                    <button id="btnToggleOutline" class="inline-flex items-center gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer">
                         <span id="outlineStatusText">Ẩn nét mờ</span>
                     </button>
 
                     <div class="flex items-center bg-slate-100 rounded-xl p-0.5 border border-slate-200">
-                        <button class="speed-btn px-2 py-1.5 text-[11px] font-semibold text-slate-600 rounded-lg hover:bg-white transition" data-speed="0.5">0.5x</button>
-                        <button class="speed-btn px-2 py-1.5 text-[11px] font-semibold bg-white text-blue-600 shadow-2xs rounded-lg" data-speed="1">1x</button>
-                        <button class="speed-btn px-2 py-1.5 text-[11px] font-semibold text-slate-600 rounded-lg hover:bg-white transition" data-speed="1.8">1.8x</button>
+                        <button class="speed-btn px-2 py-1.5 text-[11px] font-semibold text-slate-600 rounded-lg hover:bg-white transition cursor-pointer" data-speed="0.5">0.5x</button>
+                        <button class="speed-btn px-2 py-1.5 text-[11px] font-semibold bg-white text-blue-600 shadow-2xs rounded-lg cursor-pointer" data-speed="1">1x</button>
+                        <button class="speed-btn px-2 py-1.5 text-[11px] font-semibold text-slate-600 rounded-lg hover:bg-white transition cursor-pointer" data-speed="1.8">1.8x</button>
                     </div>
                 </div>
             </div>
@@ -275,19 +245,17 @@
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <button id="btnAddSampleWords" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1">
+                        <button id="btnAddSampleWords" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1 cursor-pointer">
                             <span>+ Nạp từ mẫu HSK</span>
                         </button>
-                        <button id="btnClearAllSaved" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg font-medium transition">
+                        <button id="btnClearAllSaved" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer">
                             Xóa tất cả
                         </button>
                     </div>
                 </div>
 
                 <!-- Danh sách các đối tượng từ đã lưu -->
-                <div id="savedWordsList" class="grid grid-cols-1 gap-3 max-h-[520px] overflow-y-auto custom-scrollbar pr-1">
-                    <!-- Render động bằng JS -->
-                </div>
+                <div id="savedWordsList" class="grid grid-cols-1 gap-3 max-h-[520px] overflow-y-auto custom-scrollbar pr-1"></div>
             </div>
         </div>
 
@@ -308,7 +276,7 @@
                     </div>
                 </div>
 
-                <!-- Khi chưa lưu từ -->
+                <!-- Khi chưa lưu đủ từ -->
                 <div id="quizEmptyState" class="text-center py-12">
                     <div class="text-4xl mb-3">📖</div>
                     <h3 class="text-base font-bold text-slate-800 mb-1">Chưa có đủ cụm từ vựng để tạo Quiz</h3>
@@ -316,10 +284,10 @@
                         Bạn cần lưu ít nhất 2 cụm từ ở mục <strong>"Luyện viết"</strong> để hệ thống tạo đề thi trắc nghiệm ngẫu nhiên.
                     </p>
                     <div class="flex justify-center gap-2">
-                        <button onclick="switchTab('practice')" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition">
+                        <button onclick="switchTab('practice')" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition cursor-pointer">
                             Sang luyện viết & lưu từ
                         </button>
-                        <button id="btnQuizLoadSample" class="bg-amber-100 text-amber-800 px-4 py-2 rounded-xl text-xs font-bold hover:bg-amber-200 transition">
+                        <button id="btnQuizLoadSample" class="bg-amber-100 text-amber-800 px-4 py-2 rounded-xl text-xs font-bold hover:bg-amber-200 transition cursor-pointer">
                             + Nạp 8 cụm từ mẫu HSK
                         </button>
                     </div>
@@ -342,20 +310,30 @@
                         </p>
                         <h2 id="quizQuestionTarget" class="text-4xl sm:text-5xl font-extrabold text-slate-900 hanzi-font mb-2">你好</h2>
                         <p id="quizQuestionSub" class="text-xs text-slate-500 mb-3"></p>
-                        <button id="btnQuizSpeak" title="Nghe phát âm" class="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-blue-600 py-1.5 px-3 rounded-lg bg-white border border-slate-200 shadow-2xs font-medium">
-                            <span>🔊 Nghe phát âm</span>
-                        </button>
+                        <div class="flex items-center justify-center gap-2">
+                            <button id="btnQuizSpeak" title="Nghe phát âm" class="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-blue-600 py-1.5 px-3 rounded-lg bg-white border border-slate-200 shadow-2xs font-medium cursor-pointer">
+                                <span>🔊 Nghe phát âm</span>
+                            </button>
+                            <button id="btnQuizOpenWriter" type="button" title="Luyện viết chữ Hán của từ này" class="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 py-1.5 px-3 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 font-bold transition cursor-pointer shadow-2xs">
+                                <span>✍️ Luyện viết chữ</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- 4 Phương án trả lời -->
                     <div id="quizOptionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md mb-5"></div>
 
                     <!-- Phản hồi đúng/sai và chuyển câu -->
-                    <div id="quizFeedbackBox" class="hidden w-full max-w-md p-3.5 rounded-xl text-xs font-semibold flex items-center justify-between mb-3">
+                    <div id="quizFeedbackBox" class="hidden w-full max-w-md p-3.5 rounded-xl text-xs font-semibold flex flex-col sm:flex-row items-center justify-between gap-2.5 mb-3">
                         <span id="quizFeedbackText">Chính xác! 🎉</span>
-                        <button id="btnQuizNext" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition">
-                            Câu tiếp theo →
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <button id="btnQuizFeedbackPractice" type="button" class="bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow-2xs">
+                                ✍️ Tập viết
+                            </button>
+                            <button id="btnQuizNext" class="bg-slate-900 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-800 transition cursor-pointer">
+                                Câu tiếp theo →
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -377,11 +355,20 @@
                         </div>
                     </div>
 
+                    <!-- Danh sách từ vựng vừa làm để người dùng luyện viết lại sau khi làm Quiz -->
+                    <div class="w-full max-w-md mx-auto mb-6 text-left">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5 flex items-center justify-between">
+                            <span>Luyện viết lại các từ trong đề thi:</span>
+                            <span class="text-[11px] font-normal text-slate-400">Bấm nút để tập viết</span>
+                        </h4>
+                        <div id="quizReviewedWordsList" class="flex flex-col gap-2 max-h-56 overflow-y-auto custom-scrollbar pr-1"></div>
+                    </div>
+
                     <div class="flex justify-center gap-3">
-                        <button id="btnQuizRestart" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-700 transition shadow-sm">
+                        <button id="btnQuizRestart" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-700 transition shadow-sm cursor-pointer">
                             Làm bài Quiz mới
                         </button>
-                        <button onclick="switchTab('practice')" class="bg-slate-100 text-slate-700 px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-200 transition">
+                        <button onclick="switchTab('practice')" class="bg-slate-100 text-slate-700 px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-200 transition cursor-pointer">
                             Quay lại Luyện viết
                         </button>
                     </div>
@@ -389,1124 +376,298 @@
             </div>
         </div>
 
-    </main>
-
-    <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 bg-white">
-        <p>HanziLab • Lưu trữ cụm từ vựng chuẩn Object (word, pinyin, meaning, date) trong LocalStorage.</p>
-    </footer>
-
-    <!-- ======================================================= -->
-    <!-- JAVASCRIPT LOGIC XỬ LÝ ĐỐI TƯỢNG (OBJECT STORAGE)     -->
-    <!-- ======================================================= -->
-    <script>
-    (function () {
-        'use strict';
-
-        // ----------------------------------------------------
-        // 1. TỪ ĐIỂN CỤM TỪ KÈM PHIÊN ÂM & NGHĨA TIẾNG VIỆT
-        // ----------------------------------------------------
-        const DICTIONARY = {
-            phrases: {
-                "nihao": { word: "你好", pinyin: "nǐ hǎo", meaning: "Xin chào" },
-                "hanyu": { word: "汉语", pinyin: "hàn yǔ", meaning: "Tiếng Hán / Tiếng Trung" },
-                "zhongwen": { word: "中文", pinyin: "zhōng wén", meaning: "Tiếng Trung" },
-                "xuexi": { word: "学习", pinyin: "xué xí", meaning: "Học tập" },
-                "xiexie": { word: "谢谢", pinyin: "xiè xie", meaning: "Cảm ơn" },
-                "zaijian": { word: "再见", pinyin: "zài jiàn", meaning: "Tạm biệt" },
-                "duibuqi": { word: "对不起", pinyin: "duì bu qǐ", meaning: "Xin lỗi" },
-                "meiguanxi": { word: "没关系", pinyin: "méi guān xi", meaning: "Không sao / Không có chi" },
-                "zhongguo": { word: "中国", pinyin: "zhōng guó", meaning: "Trung Quốc" },
-                "hanzi": { word: "汉字", pinyin: "hàn zì", meaning: "Chữ Hán" },
-                "laoshi": { word: "老师", pinyin: "lǎo shī", meaning: "Thầy / Cô giáo" },
-                "xuesheng": { word: "学生", pinyin: "xué sheng", meaning: "Học sinh / Sinh viên" },
-                "pengyou": { word: "朋友", pinyin: "péng you", meaning: "Bạn bè" },
-                "baba": { word: "爸爸", pinyin: "bà ba", meaning: "Bố / Ba" },
-                "mama": { word: "妈妈", pinyin: "mā ma", meaning: "Mẹ" },
-                "gege": { word: "哥哥", pinyin: "gē ge", meaning: "Anh trai" },
-                "jiejie": { word: "姐姐", pinyin: "jiě jie", meaning: "Chị gái" },
-                "didi": { word: "弟弟", pinyin: "dì di", meaning: "Em trai" },
-                "meimei": { word: "妹妹", pinyin: "mèi mei", meaning: "Em gái" },
-                "mingtian": { word: "明天", pinyin: "míng tiān", meaning: "Ngày mai" },
-                "jintian": { word: "今天", pinyin: "jīn tiān", meaning: "Hôm nay" },
-                "zuotian": { word: "昨天", pinyin: "zuó tiān", meaning: "Hôm qua" },
-                "chifan": { word: "吃饭", pinyin: "chī fàn", meaning: "Ăn cơm" },
-                "shuijiao": { word: "睡觉", pinyin: "shuì jiào", meaning: "Đi ngủ" },
-                "hecha": { word: "喝茶", pinyin: "hē chá", meaning: "Uống trà" },
-                "xihuan": { word: "喜欢", pinyin: "xǐ huan", meaning: "Thích" },
-                "gaoxing": { word: "高兴", pinyin: "gāo xìng", meaning: "Vui vẻ" },
-                "renshi": { word: "认识", pinyin: "rèn shi", meaning: "Quen biết" },
-                "beijing": { word: "北京", pinyin: "běi jīng", meaning: "Bắc Kinh" },
-                "shanghai": { word: "上海", pinyin: "shàng hǎi", meaning: "Thượng Hải" },
-                "shouji": { word: "手机", pinyin: "shǒu jī", meaning: "Điện thoại di động" },
-                "diannao": { word: "电脑", pinyin: "diàn nǎo", meaning: "Máy vi tính" },
-                "tianqi": { word: "天气", pinyin: "tiān qì", meaning: "Thời tiết" },
-                "feiji": { word: "飞机", pinyin: "fēi jī", meaning: "Máy bay" },
-                "huoche": { word: "火车", pinyin: "huǒ chē", meaning: "Tàu hỏa" },
-                "yiyuan": { word: "医院", pinyin: "yī yuàn", meaning: "Bệnh viện" },
-                "xuexiao": { word: "学校", pinyin: "xué xiào", meaning: "Trường học" },
-                "shangdian": { word: "商店", pinyin: "shāng diàn", meaning: "Cửa hàng" },
-                "kafei": { word: "咖啡", pinyin: "kā fēi", meaning: "Cà phê" },
-                "gongzuo": { word: "工作", pinyin: "gōng zuò", meaning: "Công việc / Đi làm" },
-                "shijian": { word: "时间", pinyin: "shí jiān", meaning: "Thời gian" },
-                "duoshao": { word: "多少", pinyin: "duō shao", meaning: "Bao nhiêu" },
-                "shenme": { word: "什么", pinyin: "shén me", meaning: "Cái gì" }
-            },
-            singleWords: {
-                "好": { pinyin: "hǎo", meaning: "Tốt, đẹp, hay" },
-                "你": { pinyin: "nǐ", meaning: "Bạn, anh, chị" },
-                "我": { pinyin: "wǒ", meaning: "Tôi, ta, mình" },
-                "他": { pinyin: "tā", meaning: "Anh ấy, ông ấy" },
-                "她": { pinyin: "tā", meaning: "Cô ấy, bà ấy" },
-                "学": { pinyin: "xué", meaning: "Học" },
-                "习": { pinyin: "xí", meaning: "Tập, rèn luyện" },
-                "汉": { pinyin: "hàn", meaning: "Hán (chữ Hán)" },
-                "字": { pinyin: "zì", meaning: "Chữ, ký tự" },
-                "中": { pinyin: "zhōng", meaning: "Trung (ở giữa)" },
-                "国": { pinyin: "guó", meaning: "Nước, quốc gia" },
-                "大": { pinyin: "dà", meaning: "To, lớn" },
-                "小": { pinyin: "xiǎo", meaning: "Nhỏ, bé" },
-                "爱": { pinyin: "ài", meaning: "Yêu, thương" }
-            },
-            syllables: {
-                "ni": ["你", "呢", "泥", "拟"], "hao": ["好", "号", "毫", "豪"],
-                "han": ["汉", "汗", "寒", "含"], "zi": ["字", "子", "自", "紫"],
-                "xue": ["学", "雪", "靴"], "xi": ["习", "西", "系", "喜", "细", "洗"],
-                "zhong": ["中", "重", "种", "钟"], "guo": ["国", "果", "过", "锅"],
-                "wo": ["我", "握", "窝"], "ta": ["他", "她", "它"],
-                "shi": ["是", "时", "事", "十"], "de": ["的", "得", "地"], "yu": ["语", "雨", "鱼", "与"]
-            }
-        };
-
-        // ----------------------------------------------------
-        // 2. STORAGE SERVICE (LƯU ĐỐI TƯỢNG CỤM TỪ OBJECT)
-        // Schema: { word: string, pinyin: string, meaning: string, date: string }
-        // ----------------------------------------------------
-        const STORAGE_KEY = 'hanzilab_saved_word_objects_v2';
-
-        function formatDate(timestamp = Date.now()) {
-            const d = new Date(timestamp);
-            const day = String(d.getDate()).padStart(2, '0');
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const year = d.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-
-        const StorageService = {
-            getSavedWords() {
-                try {
-                    const data = localStorage.getItem(STORAGE_KEY);
-                    return data ? JSON.parse(data) : [];
-                } catch (e) {
-                    console.error('Lỗi khi đọc LocalStorage:', e);
-                    return [];
-                }
-            },
-
-            /**
-             * Lưu một đối tượng từ hoàn chỉnh vào LocalStorage
-             * @param {Object} wordObj
-             * @param {string} wordObj.word - Cụm từ hoặc chữ Hán (VD: '你好', '汉语')
-             * @param {string} wordObj.pinyin - Pinyin đầy đủ (VD: 'nǐ hǎo', 'hàn yǔ')
-             * @param {string} [wordObj.meaning] - Nghĩa tùy chọn
-             * @param {string} [wordObj.date] - Ngày lưu (VD: '06/09/2026')
-             */
-            saveWord(wordObj) {
-                if (!wordObj || !wordObj.word) return false;
-
-                let list = this.getSavedWords();
-                const cleanWord = wordObj.word.trim();
-                
-                // Kiểm tra xem đã tồn tại chưa
-                const existingIndex = list.findIndex(w => w.word === cleanWord);
-
-                const newEntry = {
-                    word: cleanWord,
-                    pinyin: wordObj.pinyin ? wordObj.pinyin.trim() : (computeFullPinyin(cleanWord) || ''),
-                    meaning: wordObj.meaning ? wordObj.meaning.trim() : (lookupDefaultMeaning(cleanWord) || ''),
-                    date: wordObj.date || formatDate()
-                };
-
-                if (existingIndex >= 0) {
-                    // Cập nhật thông tin nếu đã có
-                    list[existingIndex] = newEntry;
-                } else {
-                    // Thêm mới lên đầu danh sách
-                    list.unshift(newEntry);
-                }
-
-                try {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-                    return true;
-                } catch (e) {
-                    console.error('Lỗi khi ghi LocalStorage:', e);
-                    return false;
-                }
-            },
-
-            removeWord(word) {
-                let list = this.getSavedWords().filter(w => w.word !== word);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-            },
-
-            updateMeaning(word, newMeaning) {
-                let list = this.getSavedWords();
-                const item = list.find(w => w.word === word);
-                if (item) {
-                    item.meaning = newMeaning.trim();
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-                }
-            },
-
-            clearAll() {
-                localStorage.removeItem(STORAGE_KEY);
-            },
-
-            isSaved(word) {
-                if (!word) return false;
-                return this.getSavedWords().some(w => w.word === word.trim());
-            },
-
-            getWord(word) {
-                if (!word) return null;
-                return this.getSavedWords().find(w => w.word === word.trim()) || null;
-            }
-        };
-
-        // ----------------------------------------------------
-        // 3. TIỆN ÍCH NGỮ ÂM & NGHĨA TỪ ĐIỂN
-        // ----------------------------------------------------
-        function computeFullPinyin(text) {
-            if (!text) return '';
-            // Chuẩn hóa pinyin bằng pinyin-pro nếu có
-            if (typeof pinyinPro !== 'undefined') {
-                try {
-                    return pinyinPro.pinyin(text, { toneType: 'symbol' });
-                } catch(e) {}
-            }
-            return '';
-        }
-
-        function lookupDefaultMeaning(word) {
-            // Tra cứu trong phrases
-            for (const key in DICTIONARY.phrases) {
-                if (DICTIONARY.phrases[key].word === word) {
-                    return DICTIONARY.phrases[key].meaning;
-                }
-            }
-            // Tra cứu trong singleWords
-            if (DICTIONARY.singleWords[word]) {
-                return DICTIONARY.singleWords[word].meaning;
-            }
-            return '';
-        }
-
-        // Loại bỏ dấu thanh điệu của chuỗi Pinyin để tìm kiếm
-        function normalizePinyinInput(str) {
-            return str.toLowerCase()
-                      .normalize("NFD")
-                      .replace(/[\u0300-\u036f]/g, "")
-                      .replace(/[^a-z]/g, "");
-        }
-
-        // ----------------------------------------------------
-        // 4. DỊCH VỤ PHÁT ÂM AUDIO (WEB SPEECH API)
-        // ----------------------------------------------------
-        const AudioService = {
-            voice: null,
-            init() {
-                if ('speechSynthesis' in window) {
-                    const pickVoice = () => {
-                        const voices = window.speechSynthesis.getVoices();
-                        this.voice = voices.find(v => v.lang === 'zh-CN' || v.lang === 'zh_CN') ||
-                                     voices.find(v => v.lang.startsWith('zh')) || null;
-                    };
-                    pickVoice();
-                    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-                        window.speechSynthesis.onvoiceschanged = pickVoice;
-                    }
-                }
-            },
-            speak(text) {
-                if (!('speechSynthesis' in window) || !text) return;
-                window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(text);
-                utter.lang = 'zh-CN';
-                utter.rate = 0.85;
-                if (this.voice) utter.voice = this.voice;
-                window.speechSynthesis.speak(utter);
-            }
-        };
-
-        // ----------------------------------------------------
-        // 5. TRẠNG THÁI TOÀN CỤC ỨNG DỤNG (APPLICATION STATE)
-        // ----------------------------------------------------
-        const state = {
-            // Cụm từ đang xem xét
-            currentWordObj: {
-                word: '你好',
-                pinyin: 'nǐ hǎo',
-                meaning: 'Xin chào',
-                date: formatDate()
-            },
-
-            // Ký tự cụ thể đang được vẽ nét
-            characters: ['你', '好'],
-            activeCharIndex: 0,
-            currentChar: '你',
-
-            // HanziWriter
-            writer: null,
-            isQuizWritingActive: false,
-            outlineVisible: true,
-            strokeSpeed: 1,
-
-            // Quiz Ôn tập
-            quizQuestions: [],
-            currentQuizIndex: 0,
-            quizScore: 0,
-            quizAnswered: false,
-
-            debounceTimer: null,
-            // Quản lý animation & bộ đếm thời gian an toàn
-            animTimeoutId: null,
-            animSessionId: 0
-        };
-
-        // ----------------------------------------------------
-        // 6. ĐIỀU HƯỚNG TABS
-        // ----------------------------------------------------
-        window.switchTab = function(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                if (btn.getAttribute('data-tab') === tabName) {
-                    btn.className = 'tab-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-white text-blue-600 shadow-xs';
-                } else {
-                    btn.className = 'tab-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
-                }
-            });
-
-            document.querySelectorAll('.tab-content').forEach(sec => sec.classList.add('hidden'));
-
-            if (tabName === 'practice') {
-                document.getElementById('sectionPractice').classList.remove('hidden');
-                if (state.writer && !state.isQuizWritingActive) {
-                    playInfiniteAnimation(state.currentChar);
-                }
-            } else {
-                // Tạm dừng animation ngầm khi đang ở tab khác (Từ đã lưu hoặc Quiz) để giải phóng CPU và tránh làm đơ giao diện
-                stopCurrentAnimation();
-                if (tabName === 'saved') {
-                    document.getElementById('sectionSaved').classList.remove('hidden');
-                    renderSavedWordsList();
-                } else if (tabName === 'quiz') {
-                    document.getElementById('sectionQuiz').classList.remove('hidden');
-                    initReviewQuiz();
-                }
-            }
-        };
-
-        // ----------------------------------------------------
-        // 7. KHỞI TẠO VÀ TẢI CỤM TỪ (LOAD WORD OBJECT)
-        // ----------------------------------------------------
-        function loadWordObject(word, customPinyin = '', customMeaning = '') {
-            if (!word) return;
-
-            // Bóc tách tất cả ký tự chữ Hán
-            const chars = word.match(/[\u4e00-\u9fa5]/g);
-            if (!chars || chars.length === 0) return;
-
-            const cleanWord = chars.join('');
-            
-            // Tìm pinyin đầy đủ
-            let fullPinyin = customPinyin;
-            if (!fullPinyin) {
-                // Kiểm tra từ điển có sẵn
-                for (const key in DICTIONARY.phrases) {
-                    if (DICTIONARY.phrases[key].word === cleanWord) {
-                        fullPinyin = DICTIONARY.phrases[key].pinyin;
-                        break;
-                    }
-                }
-                if (!fullPinyin) fullPinyin = computeFullPinyin(cleanWord);
-            }
-
-            // Tìm nghĩa
-            let meaning = customMeaning || lookupDefaultMeaning(cleanWord);
-
-            // Kiểm tra xem từ này đã được lưu trước đó chưa
-            const savedItem = StorageService.getWord(cleanWord);
-            let savedDate = formatDate();
-            if (savedItem) {
-                if (!customMeaning && savedItem.meaning) meaning = savedItem.meaning;
-                if (!customPinyin && savedItem.pinyin) fullPinyin = savedItem.pinyin;
-                savedDate = savedItem.date;
-            }
-
-            state.currentWordObj = {
-                word: cleanWord,
-                pinyin: fullPinyin,
-                meaning: meaning,
-                date: savedDate
-            };
-
-            state.characters = chars;
-            state.activeCharIndex = 0;
-
-            // Cập nhật UI thông tin cụm từ
-            document.getElementById('currentWordDisplay').innerText = state.currentWordObj.word;
-            document.getElementById('currentWordPinyin').innerText = state.currentWordObj.pinyin;
-            document.getElementById('inputMeaning').value = state.currentWordObj.meaning;
-            document.getElementById('wordDateBadge').innerText = `📅 ${state.currentWordObj.date}`;
-
-            updateSaveButtonUI();
-            renderCharacterTabs();
-            loadActiveCharToWriter();
-        }
-
-        // Render các tab chọn chữ cái trong cụm từ
-        function renderCharacterTabs() {
-            const container = document.getElementById('characterTabs');
-            container.innerHTML = '';
-            document.getElementById('charCountLabel').innerText = `${state.characters.length} chữ cái`;
-
-            state.characters.forEach((char, idx) => {
-                const btn = document.createElement('button');
-                const isActive = idx === state.activeCharIndex;
-                const pinyin = computeFullPinyin(char);
-
-                btn.className = `min-w-[50px] h-12 px-3.5 rounded-xl font-bold text-lg border transition-all flex items-center justify-center gap-1.5 ${
-                    isActive 
-                        ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20 scale-105' 
-                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                }`;
-                btn.innerHTML = `<span class="hanzi-font text-xl">${char}</span><span class="text-xs font-medium opacity-80">${pinyin}</span>`;
-
-                btn.onclick = () => {
-                    state.activeCharIndex = idx;
-                    renderCharacterTabs();
-                    loadActiveCharToWriter();
-                };
-
-                container.appendChild(btn);
-            });
-        }
-
-        // Dừng triệt để mọi tiến trình animation và bộ đếm thời gian ngầm cũ
-        function stopCurrentAnimation() {
-            if (state.animTimeoutId) {
-                clearTimeout(state.animTimeoutId);
-                state.animTimeoutId = null;
-            }
-            state.animSessionId = (state.animSessionId || 0) + 1;
-            if (state.writer) {
-                try {
-                    state.writer.cancelQuiz();
-                } catch (e) {}
-            }
-        }
-
-        // Nạp chữ cái đang chọn vào khung vẽ HanziWriter
-        function loadActiveCharToWriter() {
-            // 1. DỌN SẠCH TIẾN TRÌNH CHẠY NGẦM CŨ (clearTimeout + hủy animation cũ)
-            stopCurrentAnimation();
-
-            const char = state.characters[state.activeCharIndex];
-            state.currentChar = char;
-
-            document.getElementById('currentCharDisplay').innerText = char;
-            document.getElementById('currentCharPinyin').innerText = computeFullPinyin(char);
-
-            const targetEl = document.getElementById('character-target');
-            targetEl.innerHTML = '';
-            state.isQuizWritingActive = false;
-            resetQuizButtonUI();
-
-            const boxWidth = Math.min(targetEl.parentElement.clientWidth - 20, 260);
-            const size = Math.max(boxWidth, 200);
-
-            // Ghi nhớ phiên vẽ hiện tại và cờ khởi chạy duy nhất
-            const thisSession = state.animSessionId;
-            let hasStartedOnce = false;
-
-            const triggerPlayOnce = () => {
-                if (hasStartedOnce || state.animSessionId !== thisSession) return;
-                hasStartedOnce = true;
-                playInfiniteAnimation(char);
-            };
-
-            try {
-                state.writer = HanziWriter.create('character-target', char, {
-                    width: size,
-                    height: size,
-                    padding: 18,
-                    showOutline: state.outlineVisible,
-                    strokeAnimationSpeed: state.strokeSpeed,
-                    delayBetweenStrokes: 180,
-                    strokeColor: '#2563eb',
-                    outlineColor: '#cbd5e1',
-                    drawingColor: '#dc2626',
-                    drawingWidth: 16,
-                    showHintAfterMisses: 2,
-                    highlightOnComplete: false, // Bỏ hoàn toàn hiệu ứng nháy để không bị dừng 2 giây
-                    onLoadCharDataSuccess: () => {
-                        // Tự động viết ngay lập tức khi tải xong nét nếu chưa khởi chạy
-                        if (state.currentChar === char && state.animSessionId === thisSession) {
-                            triggerPlayOnce();
-                        }
-                    },
-                    onLoadCharDataError: (err) => {
-                        console.error('Lỗi tải dữ liệu nét:', err);
-                        targetEl.innerHTML = `<div class="text-4xl font-serif text-slate-700">${char}</div>`;
-                    }
-                });
-
-                // Kích hoạt ngay lập tức nếu dữ liệu nét đã sẵn sàng
-                triggerPlayOnce();
-            } catch (e) {
-                targetEl.innerHTML = `<div class="text-4xl font-serif text-slate-700">${char}</div>`;
-            }
-        }
-
-        // Tự động lặp lại liên tục từ đầu với setTimeout an toàn (được quản lý sạch bằng clearTimeout)
-        function playInfiniteAnimation(char) {
-            // Xóa sạch tiến trình hẹn giờ cũ nếu có trước khi bắt đầu lượt mới
-            if (state.animTimeoutId) {
-                clearTimeout(state.animTimeoutId);
-                state.animTimeoutId = null;
-            }
-
-            if (!state.writer || state.isQuizWritingActive) return;
-            // Dừng vòng lặp nếu người dùng đã chuyển sang chữ khác
-            if (state.currentChar !== char) return;
-
-            const currentSession = state.animSessionId;
-
-            state.writer.showOutline();
-            state.writer.animateCharacter({
-                onComplete: () => {
-                    // Kiểm tra session hiện tại: Nếu phiên vẽ đã đổi hoặc đang ở Quiz thì dừng ngay
-                    if (state.animSessionId !== currentSession) return;
-                    if (state.isQuizWritingActive || state.currentChar !== char) return;
-
-                    // Sử dụng setTimeout an toàn đưa lượt vẽ mới vào cuối event loop (Macro-task),
-                    // giúp giải phóng luồng chính để màn hình cảm ứng, vuốt chạm và giao diện mượt mà tuyệt đối không bị đơ!
-                    state.animTimeoutId = setTimeout(() => {
-                        if (state.animSessionId === currentSession && !state.isQuizWritingActive && state.currentChar === char) {
-                            playInfiniteAnimation(char);
-                        }
-                    }, 0);
-                }
-            });
-        }
-
-        // Cập nhật trạng thái nút "Lưu từ này"
-        function updateSaveButtonUI() {
-            const isSaved = StorageService.isSaved(state.currentWordObj.word);
-            const btn = document.getElementById('btnSaveWord');
-            const icon = document.getElementById('saveIcon');
-            const text = document.getElementById('saveBtnText');
-
-            if (isSaved) {
-                btn.className = 'inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold rounded-xl border transition shadow-2xs bg-amber-500 text-white border-amber-500';
-                icon.className = 'w-4 h-4 text-white';
-                text.innerText = 'Đã lưu cụm từ ✓';
-            } else {
-                btn.className = 'inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold rounded-xl border transition shadow-2xs bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100';
-                icon.className = 'w-4 h-4 text-amber-500';
-                text.innerText = 'Lưu cụm từ này';
-            }
-
-            updateSavedBadgeCount();
-        }
-
-        function updateSavedBadgeCount() {
-            const count = StorageService.getSavedWords().length;
-            const badge = document.getElementById('savedBadgeCount');
-            if (count > 0) {
-                badge.innerText = count;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
-
-        // Xử lý khi bấm nút "Lưu từ này"
-        function handleSaveCurrentWord() {
-            const current = state.currentWordObj;
-            if (!current || !current.word) return;
-
-            // Đọc nghĩa hiện tại trên ô input
-            const inputMeaningVal = document.getElementById('inputMeaning').value.trim();
-            current.meaning = inputMeaningVal;
-
-            if (StorageService.isSaved(current.word)) {
-                // Nếu đã lưu thì xóa bỏ (toggle)
-                StorageService.removeWord(current.word);
-            } else {
-                // Lưu đối tượng đầy đủ
-                StorageService.saveWord({
-                    word: current.word,
-                    pinyin: current.pinyin,
-                    meaning: current.meaning,
-                    date: formatDate()
-                });
-            }
-
-            updateSaveButtonUI();
-        }
-
-        // ----------------------------------------------------
-        // 8. CHẾ ĐỘ TỰ TẬP VIẾT TỪNG NÉT (QUIZ NÉT)
-        // ----------------------------------------------------
-        function toggleInteractiveWritingQuiz() {
-            if (!state.writer) return;
-
-            const quizBox = document.getElementById('quizStatusBox');
-            const quizStatusText = document.getElementById('quizStatusText');
-            const quizStrokeCount = document.getElementById('quizStrokeCount');
-            const quizContainer = document.getElementById('mizigeContainer');
-            const btnQuiz = document.getElementById('btnQuiz');
-            const quizBtnText = document.getElementById('quizBtnText');
-
-            if (state.isQuizWritingActive) {
-                stopCurrentAnimation();
-                state.writer.cancelQuiz();
-                resetQuizButtonUI();
-                playInfiniteAnimation(state.currentChar);
-            } else {
-                // Trước khi bắt đầu vẽ cảm ứng, hủy triệt để mọi animation và timeout chạy ngầm để không đơ màn hình
-                stopCurrentAnimation();
-                state.isQuizWritingActive = true;
-                quizContainer.classList.add('quiz-active');
-                btnQuiz.classList.replace('bg-rose-50', 'bg-rose-600');
-                btnQuiz.classList.replace('text-rose-700', 'text-white');
-                quizBtnText.innerText = 'Dừng tập viết';
-
-                quizBox.className = 'w-full max-w-sm mb-3 px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between bg-blue-50 text-blue-700 border border-blue-200';
-                quizBox.classList.remove('hidden');
-                quizStatusText.innerText = 'Dùng chuột hoặc ngón tay vẽ theo từng nét!';
-                quizStrokeCount.innerText = '';
-
-                state.writer.quiz({
-                    onMistake: (strokeData) => {
-                        quizBox.className = 'w-full max-w-sm mb-3 px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between bg-amber-50 text-amber-700 border border-amber-200';
-                        quizStatusText.innerText = `Chưa đúng nét! (Còn ${strokeData.mistakesOnStroke} lần thử)`;
-                    },
-                    onCorrectStroke: (strokeData) => {
-                        quizBox.className = 'w-full max-w-sm mb-3 px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between bg-emerald-50 text-emerald-700 border border-emerald-200';
-                        quizStatusText.innerText = 'Nét chuẩn xác! ✨ Vẽ nét tiếp theo';
-                        quizStrokeCount.innerText = `Nét ${strokeData.strokeNum + 1}/${strokeData.totalStrokes}`;
-                    },
-                    onComplete: (summary) => {
-                        state.isQuizWritingActive = false;
-                        quizContainer.classList.remove('quiz-active');
-                        btnQuiz.classList.replace('bg-rose-600', 'bg-rose-50');
-                        btnQuiz.classList.replace('text-white', 'text-rose-700');
-                        quizBtnText.innerText = 'Tự tập viết';
-
-                        quizBox.className = 'w-full max-w-sm mb-3 px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between bg-emerald-500 text-white shadow-md shadow-emerald-500/20';
-                        quizStatusText.innerText = `🎉 Hoàn thành chữ "${state.currentChar}"`;
-                        quizStrokeCount.innerText = `Sai: ${summary.totalMistakes} lần`;
-                    }
-                });
-            }
-        }
-
-        function resetQuizButtonUI() {
-            state.isQuizWritingActive = false;
-            document.getElementById('mizigeContainer').classList.remove('quiz-active');
-            const btnQuiz = document.getElementById('btnQuiz');
-            btnQuiz.classList.add('bg-rose-50', 'text-rose-700');
-            btnQuiz.classList.remove('bg-rose-600', 'text-white');
-            document.getElementById('quizBtnText').innerText = 'Tự tập viết';
-            document.getElementById('quizStatusBox').classList.add('hidden');
-        }
-
-        // ----------------------------------------------------
-        // 9. XỬ LÝ TRA CỨU CẢ CỤM TỪ HOẶC PINYIN
-        // ----------------------------------------------------
-        async function handleSearch() {
-            const raw = document.getElementById('userInput').value.trim();
-            if (!raw) return;
-
-            document.getElementById('candidateContainer').classList.add('hidden');
-
-            // 1. Người dùng nhập chữ Hán trực tiếp (VD: '你好', '汉语', '学习')
-            if (/[\u4e00-\u9fa5]/.test(raw)) {
-                loadWordObject(raw);
-                return;
-            }
-
-            // 2. Người dùng nhập Pinyin (VD: 'nihao', 'nǐ hǎo', 'hanyu', 'xuexi')
-            const normalized = normalizePinyinInput(raw);
-            let candidateList = [];
-
-            // Khớp trong danh sách phrases từ điển
-            if (DICTIONARY.phrases[normalized]) {
-                candidateList.push(DICTIONARY.phrases[normalized].word);
-            }
-            // Khớp âm tiết đơn
-            if (DICTIONARY.syllables[normalized]) {
-                candidateList.push(...DICTIONARY.syllables[normalized]);
-            }
-
-            // Thử gọi online Google Inputtools API nếu có kết nối mạng
-            try {
-                const res = await fetch(`https://inputtools.google.com/request?ime=pinyin&ie=utf-8&oe=utf-8&app=translate&num=8&text=${encodeURIComponent(normalized)}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data[0] === 'SUCCESS' && data[1] && data[1][0] && data[1][0][1]) {
-                        candidateList = Array.from(new Set([...candidateList, ...data[1][0][1]]));
-                    }
-                }
-            } catch(e) {}
-
-            if (candidateList.length > 0) {
-                // Tải cụm từ ứng viên đầu tiên
-                loadWordObject(candidateList[0], raw.includes(' ') ? raw : '');
-                renderCandidates(candidateList);
-            } else {
-                alert(`Không tìm thấy chữ Hán tương ứng với "${raw}". Hãy thử các từ như nihao, hanyu, xuexi!`);
-            }
-        }
-
-        function renderCandidates(candidates) {
-            const container = document.getElementById('candidateContainer');
-            const listEl = document.getElementById('candidateList');
-            listEl.innerHTML = '';
-            container.classList.remove('hidden');
-
-            candidates.slice(0, 12).forEach((cand, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'inline-flex items-center gap-1 px-3 py-1 bg-slate-100 hover:bg-blue-50 text-slate-800 hover:text-blue-600 rounded-lg text-xs font-medium border border-slate-200 transition';
-                btn.innerHTML = `<span class="text-[10px] text-slate-400">${idx + 1}.</span> <span class="text-sm font-semibold">${cand}</span>`;
-                btn.onclick = () => {
-                    document.getElementById('userInput').value = cand;
-                    container.classList.add('hidden');
-                    loadWordObject(cand);
-                };
-                listEl.appendChild(btn);
-            });
-        }
-
-        // ----------------------------------------------------
-        // 10. QUẢN LÝ TỪ ĐÃ LƯU (TAB 2: HIỂN THỊ OBJECT ĐẦY ĐỦ)
-        // ----------------------------------------------------
-        function renderSavedWordsList() {
-            const list = StorageService.getSavedWords();
-            const container = document.getElementById('savedWordsList');
-            document.getElementById('savedCountHeader').innerText = `${list.length} từ`;
-            container.innerHTML = '';
-
-            if (list.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full text-center py-12 text-slate-400 text-xs">
-                        <div class="text-4xl mb-2">📂</div>
-                        Chưa có cụm từ nào được lưu.<br>Hãy sang tab <strong>"Luyện viết"</strong> và bấm <strong>"Lưu cụm từ này"</strong> nhé!
+        <!-- ======================================================= -->
+        <!-- TAB 4: KIỂM TRA VIẾT CHỮ HÁN THEO GỢI Ý (WRITE TEST)   -->
+        <!-- ======================================================= -->
+        <div id="sectionWriteTest" class="tab-content hidden flex-col">
+            <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80">
+                <div class="flex items-center justify-between pb-4 mb-5 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <span>📝 Kiểm Tra Viết Chữ Hán</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Hiển thị Nghĩa hoặc Pinyin, bạn hãy nhớ và viết lại chữ Hán chính xác!</p>
                     </div>
-                `;
-                return;
-            }
+                    <div id="writeTestScoreBadge" class="hidden bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-xl text-xs font-bold">
+                        Đúng: <span id="writeTestScoreText">0</span>/<span id="writeTestTotalText">0</span>
+                    </div>
+                </div>
 
-            list.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-slate-200/90 hover:border-blue-300 hover:bg-blue-50/30 transition bg-white shadow-2xs gap-3';
+                <!-- 1. Khi chưa lưu đủ từ -->
+                <div id="writeTestEmptyState" class="text-center py-12">
+                    <div class="text-4xl mb-3">✍️</div>
+                    <h3 class="text-base font-bold text-slate-800 mb-1">Chưa có đủ từ vựng để tạo bài kiểm tra viết</h3>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto mb-4">
+                        Bạn cần lưu ít nhất 2 cụm từ ở mục <strong>"Luyện viết"</strong> để hệ thống tạo bài kiểm tra viết chính tả.
+                    </p>
+                    <div class="flex justify-center gap-2">
+                        <button onclick="switchTab('practice')" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition cursor-pointer">
+                            Sang luyện viết & lưu từ
+                        </button>
+                        <button id="btnWriteTestLoadSample" class="bg-amber-100 text-amber-800 px-4 py-2 rounded-xl text-xs font-bold hover:bg-amber-200 transition cursor-pointer">
+                            + Nạp 8 cụm từ mẫu HSK
+                        </button>
+                    </div>
+                </div>
 
-                card.innerHTML = `
-                    <div class="flex items-start gap-3.5">
-                        <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-700 text-2xl font-black hanzi-font border border-blue-100 shrink-0">
-                            ${item.word}
+                <!-- 2. Khu vực làm bài Kiểm tra viết -->
+                <div id="writeTestPlayArea" class="hidden flex flex-col items-center">
+                    <!-- Thanh tiến trình -->
+                    <div class="w-full flex items-center justify-between text-xs text-slate-400 mb-2">
+                        <span id="writeTestProgressText">Câu 1 / 5</span>
+                        <span id="writeTestModeBadge" class="font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">Kiểm tra viết theo Pinyin / Nghĩa</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-6">
+                        <div id="writeTestProgressBar" class="bg-blue-600 h-full w-1/5 transition-all duration-300"></div>
+                    </div>
+
+                    <!-- Hộp Gợi ý Đề bài (Chữ Hán bị ẩn hoàn toàn!) -->
+                    <div class="bg-gradient-to-b from-slate-50 to-white border border-slate-200/80 rounded-2xl p-5 w-full max-w-md text-center shadow-xs mb-4">
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                            Hãy nhớ và viết lại chữ Hán tương ứng:
+                        </p>
+                        <!-- Hiển thị Pinyin & Nghĩa nổi bật -->
+                        <div class="flex flex-col items-center gap-1 mb-2">
+                            <h2 id="writeTestPromptPinyin" class="text-2xl sm:text-3xl font-extrabold text-blue-600"></h2>
+                            <p id="writeTestPromptMeaning" class="text-sm font-semibold text-slate-700"></p>
                         </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-lg font-extrabold text-slate-900 hanzi-font">${item.word}</h3>
-                                <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">${item.pinyin}</span>
-                            </div>
-                            <p class="text-xs text-slate-600 font-medium mt-0.5">${item.meaning ? 'Nghĩa: ' + item.meaning : '<span class="text-slate-400 italic">Chưa có ghi chú nghĩa</span>'}</p>
-                            <span class="text-[10px] text-slate-400 flex items-center gap-1 mt-1">
-                                <span>📅 Ngày lưu: ${item.date || 'Chưa rõ'}</span>
+                        <div class="flex items-center justify-center gap-2 mt-2">
+                            <button id="btnWriteTestSpeak" title="Nghe phát âm" class="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-blue-600 py-1 px-2.5 rounded-lg bg-white border border-slate-200 shadow-2xs font-medium cursor-pointer">
+                                <span>🔊 Nghe đọc</span>
+                            </button>
+                            <span id="writeTestCharCountHint" class="text-xs text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+                                Gồm 2 chữ Hán
                             </span>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-1.5 self-end sm:self-center">
-                        <button class="btn-play-audio p-2 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition" title="Phát âm">
-                            🔊
-                        </button>
-                        <button class="btn-practice-word px-3 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition border border-blue-200">
-                            ✍️ Viết chữ
-                        </button>
-                        <button class="btn-del-word p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition" title="Xóa cụm từ">
-                            ✕
+                    <!-- Bộ chọn ký tự nếu từ ghép có nhiều chữ (VD: 爸爸 -> [Chữ 1] [Chữ 2]) -->
+                    <div id="writeTestCharTabsWrapper" class="w-full max-w-md mb-3 flex flex-col items-center">
+                        <div class="flex items-center justify-between w-full px-1 mb-1.5 text-xs">
+                            <span class="font-semibold text-slate-500">Đang viết chữ thứ:</span>
+                            <span id="writeTestActiveCharIndexLabel" class="text-blue-600 font-bold">1 / 2</span>
+                        </div>
+                        <div id="writeTestCharTabs" class="flex flex-wrap gap-2 justify-center w-full"></div>
+                    </div>
+
+                    <!-- Khung vẽ tương tác Mễ Tự Cách (米字格) -->
+                    <div class="relative flex flex-col items-center mb-3">
+                        <div id="writeTestMizigeBox" class="mizige-box w-[260px] h-[260px] flex items-center justify-center relative shadow-sm border-2 border-slate-300">
+                            <!-- Lưới SVG Mễ Tự Cách -->
+                            <svg class="mizige-svg" viewBox="0 0 260 260">
+                                <rect x="2" y="2" width="256" height="256" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-opacity="0.3"/>
+                                <line x1="130" y1="0" x2="130" y2="260" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.4"/>
+                                <line x1="0" y1="130" x2="260" y2="130" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.4"/>
+                                <line x1="0" y1="0" x2="260" y2="260" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.25"/>
+                                <line x1="260" y1="0" x2="0" y2="260" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.25"/>
+                            </svg>
+
+                            <!-- Canvas vẽ tự do HTML5 -->
+                            <canvas id="writeTestCanvas" width="260" height="260" class="absolute inset-0 z-20 cursor-crosshair touch-none"></canvas>
+
+                            <!-- Khung chứa HanziWriter để hiển thị đối chiếu kết quả sau khi bấm XONG -->
+                            <div id="writeTestReviewWriter" class="absolute inset-0 z-10 hidden flex items-center justify-center pointer-events-none opacity-80"></div>
+                        </div>
+
+                        <!-- Thông tin nét vẽ hiện tại -->
+                        <div class="flex items-center justify-between w-[260px] mt-2 text-[11px] text-slate-500">
+                            <span>Đã vẽ: <strong id="writeTestCurrentStrokesCount" class="text-blue-600">0</strong> nét</span>
+                            <div class="flex items-center gap-1.5">
+                                <button id="btnWriteTestUndo" type="button" title="Hoàn tác nét vừa vẽ" class="p-1 px-2 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 cursor-pointer">
+                                    ↩️ Hoàn tác
+                                </button>
+                                <button id="btnWriteTestClear" type="button" title="Xóa toàn bộ để vẽ lại" class="p-1 px-2 text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 rounded border border-rose-200 cursor-pointer font-medium">
+                                    🗑️ Xóa hết
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NÚT HOÀN THÀNH / XONG ĐỂ HỆ THỐNG KIỂM TRA -->
+                    <div id="writeTestActionArea" class="w-full max-w-md flex flex-col items-center gap-2 mb-4">
+                        <button id="btnWriteTestSubmit" type="button" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition shadow-sm flex items-center justify-center gap-2 cursor-pointer">
+                            <span>✅ Xong - Kiểm tra nét viết</span>
                         </button>
                     </div>
-                `;
 
-                // Sự kiện bấm nút
-                card.querySelector('.btn-play-audio').onclick = () => AudioService.speak(item.word);
-                
-                card.querySelector('.btn-practice-word').onclick = () => {
-                    switchTab('practice');
-                    loadWordObject(item.word, item.pinyin, item.meaning);
-                };
+                    <!-- KHU VỰC KẾT QUẢ ĐÁNH GIÁ (HIỂN THỊ SAU KHI BẤM XONG) -->
+                    <div id="writeTestFeedbackBox" class="hidden w-full max-w-md bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col gap-3 mb-4 animate-fade-in">
+                        <div class="flex items-start justify-between border-b border-slate-200 pb-3">
+                            <div>
+                                <span id="writeTestResultBadge" class="text-xs font-bold px-2.5 py-0.5 rounded-md"></span>
+                                <h4 id="writeTestCorrectDisplay" class="text-xl font-extrabold text-slate-900 hanzi-font mt-1 flex items-center gap-2"></h4>
+                                <p id="writeTestCorrectSub" class="text-xs text-slate-500"></p>
+                            </div>
+                            <!-- Nút xem hoạt ảnh nét chuẩn -->
+                            <button id="btnWriteTestAnimateTarget" type="button" class="flex items-center gap-1 text-xs font-bold text-blue-600 bg-white border border-slate-200 hover:bg-blue-50 px-2.5 py-1.5 rounded-lg shadow-2xs cursor-pointer">
+                                ▶️ Xem thứ tự nét
+                            </button>
+                        </div>
 
-                card.querySelector('.btn-del-word').onclick = () => {
-                    if (confirm(`Bạn có chắc muốn xóa cụm từ "${item.word}" khỏi danh sách?`)) {
-                        StorageService.removeWord(item.word);
-                        renderSavedWordsList();
-                        updateSaveButtonUI();
-                    }
-                };
+                        <!-- Chi tiết phân tích nét -->
+                        <div id="writeTestAnalysisText" class="text-xs text-slate-700 font-medium"></div>
 
-                container.appendChild(card);
-            });
-        }
-
-        // Nạp bộ từ mẫu HSK
-        function loadSampleWords() {
-            const samples = [
-                { word: '你好', pinyin: 'nǐ hǎo', meaning: 'Xin chào', date: formatDate() },
-                { word: '汉语', pinyin: 'hàn yǔ', meaning: 'Tiếng Hán / Tiếng Trung', date: formatDate() },
-                { word: '学习', pinyin: 'xué xí', meaning: 'Học tập', date: formatDate() },
-                { word: '谢谢', pinyin: 'xiè xie', meaning: 'Cảm ơn', date: formatDate() },
-                { word: '再见', pinyin: 'zài jiàn', meaning: 'Tạm biệt', date: formatDate() },
-                { word: '中国', pinyin: 'zhōng guó', meaning: 'Trung Quốc', date: formatDate() },
-                { word: '朋友', pinyin: 'péng you', meaning: 'Bạn bè', date: formatDate() },
-                { word: '老师', pinyin: 'lǎo shī', meaning: 'Thầy / Cô giáo', date: formatDate() }
-            ];
-
-            samples.forEach(s => StorageService.saveWord(s));
-            renderSavedWordsList();
-            updateSaveButtonUI();
-            alert('Đã nạp thành công 8 cụm từ mẫu HSK vào LocalStorage!');
-        }
-
-        // ----------------------------------------------------
-        // 11. CHẾ ĐỘ QUIZ ÔN TẬP CỤM TỪ (TAB 3)
-        // ----------------------------------------------------
-        function initReviewQuiz() {
-            const saved = StorageService.getSavedWords();
-            const emptyState = document.getElementById('quizEmptyState');
-            const playArea = document.getElementById('quizPlayArea');
-            const resultArea = document.getElementById('quizResultArea');
-            const scoreBadge = document.getElementById('quizScoreBadge');
-
-            if (saved.length < 2) {
-                emptyState.classList.remove('hidden');
-                playArea.classList.add('hidden');
-                resultArea.classList.add('hidden');
-                scoreBadge.classList.add('hidden');
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-            resultArea.classList.add('hidden');
-            playArea.classList.remove('hidden');
-            scoreBadge.classList.remove('hidden');
-
-            const questionCount = Math.min(Math.max(saved.length, 3), 8);
-            state.quizQuestions = generateQuizQuestions(saved, questionCount);
-            state.currentQuizIndex = 0;
-            state.quizScore = 0;
-            state.quizAnswered = false;
-
-            document.getElementById('quizScoreText').innerText = '0';
-            renderCurrentQuestion();
-        }
-
-        function generateQuizQuestions(words, count) {
-            const shuffled = [...words].sort(() => 0.5 - Math.random());
-            const pool = shuffled.slice(0, count);
-
-            return pool.map(target => {
-                // Lựa chọn kiểu câu hỏi ngẫu nhiên:
-                // 0: Cho Hán tự -> Hỏi Pinyin
-                // 1: Cho Pinyin -> Hỏi Hán tự
-                // 2: Cho Hán tự -> Hỏi Nghĩa (nếu có nghĩa)
-                let type = Math.random() < 0.5 ? 'hanzi_to_pinyin' : 'pinyin_to_hanzi';
-                if (target.meaning && Math.random() < 0.3) {
-                    type = 'hanzi_to_meaning';
-                }
-
-                const otherWords = words.filter(w => w.word !== target.word);
-                const distractors = otherWords.sort(() => 0.5 - Math.random()).slice(0, 3);
-
-                // Dữ liệu dự phòng nếu danh sách ít từ
-                const fallbacks = [
-                    { word: '北京', pinyin: 'běi jīng', meaning: 'Bắc Kinh' },
-                    { word: '天气', pinyin: 'tiān qì', meaning: 'Thời tiết' },
-                    { word: '时间', pinyin: 'shí jiān', meaning: 'Thời gian' },
-                    { word: '高兴', pinyin: 'gāo xìng', meaning: 'Vui vẻ' }
-                ];
-
-                while (distractors.length < 3) {
-                    const rand = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-                    if (!distractors.some(d => d.word === rand.word) && rand.word !== target.word) {
-                        distractors.push(rand);
-                    }
-                }
-
-                let correctText = '';
-                let optionExtractor = null;
-
-                if (type === 'hanzi_to_pinyin') {
-                    correctText = target.pinyin;
-                    optionExtractor = (item) => item.pinyin;
-                } else if (type === 'pinyin_to_hanzi') {
-                    correctText = target.word;
-                    optionExtractor = (item) => item.word;
-                } else {
-                    correctText = target.meaning;
-                    optionExtractor = (item) => item.meaning || item.pinyin;
-                }
-
-                const options = [
-                    { text: correctText, isCorrect: true },
-                    ...distractors.map(d => ({ text: optionExtractor(d), isCorrect: false }))
-                ].sort(() => 0.5 - Math.random());
-
-                return {
-                    type,
-                    targetWord: target.word,
-                    targetPinyin: target.pinyin,
-                    targetMeaning: target.meaning,
-                    options
-                };
-            });
-        }
-
-        function renderCurrentQuestion() {
-            state.quizAnswered = false;
-            const q = state.quizQuestions[state.currentQuizIndex];
-            const total = state.quizQuestions.length;
-
-            document.getElementById('quizProgressText').innerText = `Câu ${state.currentQuizIndex + 1} / ${total}`;
-            document.getElementById('quizProgressBar').style.width = `${((state.currentQuizIndex + 1) / total) * 100}%`;
-            document.getElementById('quizFeedbackBox').classList.add('hidden');
-
-            const promptEl = document.getElementById('quizQuestionPrompt');
-            const targetEl = document.getElementById('quizQuestionTarget');
-            const subEl = document.getElementById('quizQuestionSub');
-
-            if (q.type === 'hanzi_to_pinyin') {
-                promptEl.innerText = 'Chọn phát âm Pinyin đúng cho cụm từ:';
-                targetEl.innerText = q.targetWord;
-                subEl.innerText = q.targetMeaning ? `(Nghĩa: ${q.targetMeaning})` : '';
-                document.getElementById('quizTimerType').innerText = 'Cụm từ ➔ Pinyin';
-            } else if (q.type === 'pinyin_to_hanzi') {
-                promptEl.innerText = 'Chọn Cụm từ chữ Hán tương ứng với phiên âm:';
-                targetEl.innerText = q.targetPinyin;
-                subEl.innerText = q.targetMeaning ? `(Nghĩa: ${q.targetMeaning})` : '';
-                document.getElementById('quizTimerType').innerText = 'Pinyin ➔ Chữ Hán';
-            } else {
-                promptEl.innerText = 'Chọn nghĩa tiếng Việt đúng cho cụm từ:';
-                targetEl.innerText = q.targetWord;
-                subEl.innerText = `(${q.targetPinyin})`;
-                document.getElementById('quizTimerType').innerText = 'Cụm từ ➔ Nghĩa';
-            }
-
-            document.getElementById('btnQuizSpeak').onclick = () => AudioService.speak(q.targetWord);
-
-            const optionsGrid = document.getElementById('quizOptionsGrid');
-            optionsGrid.innerHTML = '';
-
-            q.options.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'quiz-opt-btn flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/40 text-slate-800 font-bold transition shadow-2xs text-left';
-                const letter = String.fromCharCode(65 + idx);
-                
-                const isHanziOption = /[\u4e00-\u9fa5]/.test(opt.text);
-                btn.innerHTML = `
-                    <div class="flex items-center gap-2.5">
-                        <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-xs text-slate-500 font-semibold">${letter}</span>
-                        <span class="text-base ${isHanziOption ? 'hanzi-font text-xl' : ''}">${opt.text}</span>
+                        <!-- Xác nhận đúng/sai và Chuyển câu -->
+                        <div class="flex items-center justify-between pt-1 gap-2">
+                            <div class="flex items-center gap-1.5 text-xs">
+                                <button id="btnWriteTestMarkWrong" type="button" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold transition cursor-pointer">
+                                    ✕ Viết sai
+                                </button>
+                                <button id="btnWriteTestMarkCorrect" type="button" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 font-bold transition cursor-pointer">
+                                    ✓ Viết đúng (+1)
+                                </button>
+                            </div>
+                            <button id="btnWriteTestNextWord" type="button" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1">
+                                <span>Câu tiếp theo →</span>
+                            </button>
+                        </div>
                     </div>
-                    <span class="opt-icon text-sm"></span>
-                `;
-                btn.onclick = () => handleQuizOptionSelected(opt, btn, q);
-                optionsGrid.appendChild(btn);
+                </div>
+
+                <!-- 3. Kết quả tổng kết bài Kiểm tra viết -->
+                <div id="writeTestResultArea" class="hidden text-center py-8">
+                    <div class="text-5xl mb-3">🎖️</div>
+                    <h3 class="text-xl font-extrabold text-slate-900 mb-1">Hoàn thành bài kiểm tra viết chữ Hán!</h3>
+                    <p class="text-xs text-slate-500 mb-4">Kết quả bài viết chính tả từ trí nhớ của bạn:</p>
+
+                    <div class="inline-flex items-center gap-4 bg-emerald-50 border border-emerald-200 px-6 py-4 rounded-2xl mb-6">
+                        <div>
+                            <p class="text-3xl font-black text-emerald-700" id="writeTestFinalScore">0/0</p>
+                            <p class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Từ viết đúng</p>
+                        </div>
+                        <div class="h-8 w-px bg-emerald-200"></div>
+                        <div>
+                            <p class="text-3xl font-black text-blue-600" id="writeTestFinalAccuracy">0%</p>
+                            <p class="text-[11px] font-bold text-blue-700 uppercase tracking-wider">Tỷ lệ chính xác</p>
+                        </div>
+                    </div>
+
+                    <!-- Bảng chi tiết các từ đã kiểm tra -->
+                    <div class="w-full max-w-md mx-auto mb-6 text-left">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">
+                            Chi tiết các từ đã kiểm tra:
+                        </h4>
+                        <div id="writeTestResultList" class="flex flex-col gap-2 max-h-56 overflow-y-auto custom-scrollbar pr-1"></div>
+                    </div>
+
+                    <div class="flex justify-center gap-3">
+                        <button id="btnWriteTestRestart" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-700 transition shadow-sm cursor-pointer">
+                            Làm bài kiểm tra mới
+                        </button>
+                        <button onclick="switchTab('practice')" class="bg-slate-100 text-slate-700 px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-200 transition cursor-pointer">
+                            Quay lại Luyện viết
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- MODAL LUYỆN VIẾT CHỮ HÁN TRONG BÀI QUIZ (IN-QUIZ WRITER) -->
+        <!-- ======================================================= -->
+        <div id="quizWritingModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+            <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-100 flex flex-col items-center relative max-h-[95vh] overflow-y-auto custom-scrollbar">
+                <!-- Nút Đóng Modal -->
+                <button id="btnQuizCloseWriter" type="button" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1.5 rounded-xl hover:bg-slate-100 transition cursor-pointer" title="Đóng & quay lại Quiz">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- Tiêu đề Header -->
+                <div class="w-full text-center pb-3 border-b border-slate-100 mb-4">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">Luyện viết chữ Hán ôn tập</span>
+                    <div class="flex items-center justify-center gap-2 mt-2">
+                        <h3 id="quizWriterWord" class="text-2xl font-black text-slate-900 hanzi-font">你好</h3>
+                        <span id="quizWriterPinyin" class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">nǐ hǎo</span>
+                    </div>
+                    <p id="quizWriterMeaning" class="text-xs text-slate-500 mt-1">Xin chào</p>
+                </div>
+
+                <!-- Bộ chọn chữ cái nếu từ ghép có nhiều chữ (VD: 爸爸 -> 爸 | 爸) -->
+                <div id="quizWriterCharTabsContainer" class="w-full mb-3 flex flex-col items-center">
+                    <span class="text-[11px] font-semibold text-slate-400 mb-1.5">Chọn ký tự để tập viết:</span>
+                    <div id="quizWriterCharTabs" class="flex flex-wrap gap-1.5 justify-center"></div>
+                </div>
+
+                <!-- Trạng thái chữ đang vẽ -->
+                <div class="flex items-center gap-2 mb-2 text-xs text-slate-600">
+                    <span>Đang viết: <strong id="quizWriterCurrentChar" class="text-blue-600 font-bold hanzi-font text-lg">你</strong></span>
+                    <span>• Pinyin: <strong id="quizWriterCurrentPinyin" class="text-slate-800 font-semibold">nǐ</strong></span>
+                    <button id="btnQuizWriterAudio" type="button" title="Phát âm chữ này" class="p-1 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-md transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Thông báo trạng thái Quiz tự vẽ -->
+                <div id="quizWriterStatusBox" class="w-full max-w-[240px] mb-2 px-2.5 py-1.5 rounded-lg text-[11px] font-medium flex items-center justify-between bg-slate-100 text-slate-600">
+                    <span id="quizWriterStatusText">Bấm "Tập viết" để tự vẽ nét</span>
+                    <span id="quizWriterStrokeInfo" class="font-bold text-blue-600"></span>
+                </div>
+
+                <!-- Khung vẽ Lưới Mễ Tự Cách (米字格) -->
+                <div id="quizWriterMizige" class="mizige-box w-[240px] h-[240px] flex items-center justify-center relative mb-4">
+                    <svg class="mizige-svg" viewBox="0 0 240 240">
+                        <rect x="2" y="2" width="236" height="236" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-opacity="0.3"/>
+                        <line x1="120" y1="0" x2="120" y2="240" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.4"/>
+                        <line x1="0" y1="120" x2="240" y2="120" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.4"/>
+                        <line x1="0" y1="0" x2="240" y2="240" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.25"/>
+                        <line x1="240" y1="0" x2="0" y2="240" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.25"/>
+                    </svg>
+                    <div id="quiz-writer-target" class="relative z-10"></div>
+                </div>
+
+                <!-- Thanh nút điều khiển nét vẽ -->
+                <div class="flex flex-wrap items-center justify-center gap-2 mb-4 w-full">
+                    <button id="btnQuizWriterAnimate" type="button" class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition cursor-pointer">
+                        <span>▶️ Xem nét vẽ</span>
+                    </button>
+                    <button id="btnQuizWriterStartQuiz" type="button" class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-300 transition cursor-pointer shadow-2xs">
+                        <span>✍️ Tự tập viết</span>
+                    </button>
+                    <button id="btnQuizWriterOutline" type="button" class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition cursor-pointer">
+                        <span>👁️ Nét mờ: Bật</span>
+                    </button>
+                </div>
+
+                <!-- Nút Trở lại làm Quiz -->
+                <div class="w-full pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+                    <button id="btnQuizGoToPracticeTab" type="button" class="text-xs text-slate-500 hover:text-blue-600 transition flex items-center gap-1 cursor-pointer">
+                        <span>Mở trong Tab Luyện viết ↗</span>
+                    </button>
+                    <button id="btnQuizResume" type="button" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition shadow-sm cursor-pointer">
+                        Quay lại làm Quiz →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 bg-white">
+        <p>HanziLab • Luyện viết chữ Hán & Quản lý cụm từ vựng cá nhân thông minh.</p>
+    </footer>
+
+    <!-- ======================================================= -->
+    <!-- CÁC MODULE JAVASCRIPT NỘI BỘ (MODULAR SCRIPTS)          -->
+    <!-- ======================================================= -->
+    <script src="js/storage.js"></script>
+    <script src="js/dictionary.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/writer.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- Đăng ký Service Worker cho PWA Offline (chỉ chạy trên http/https) -->
+    <script>
+        if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('ServiceWorker registered:', reg.scope))
+                    .catch(err => console.warn('ServiceWorker registration failed:', err));
             });
         }
-
-        function handleQuizOptionSelected(selectedOpt, btnElement, currentQ) {
-            if (state.quizAnswered) return;
-            state.quizAnswered = true;
-
-            const allBtns = document.querySelectorAll('.quiz-opt-btn');
-            const feedbackBox = document.getElementById('quizFeedbackBox');
-            const feedbackText = document.getElementById('quizFeedbackText');
-
-            if (selectedOpt.isCorrect) {
-                state.quizScore++;
-                document.getElementById('quizScoreText').innerText = state.quizScore;
-                btnElement.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700');
-                btnElement.querySelector('.opt-icon').innerText = '✓';
-                
-                feedbackBox.className = 'w-full max-w-md p-3.5 rounded-xl text-xs font-semibold flex items-center justify-between mb-3 bg-emerald-50 text-emerald-800 border border-emerald-200';
-                feedbackText.innerText = `Chính xác! 🎉 (${currentQ.targetWord} : ${currentQ.targetPinyin})`;
-            } else {
-                btnElement.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-700');
-                btnElement.querySelector('.opt-icon').innerText = '✕';
-                
-                allBtns.forEach(btn => {
-                    const optText = btn.querySelector('span.text-base').innerText;
-                    const correctOpt = currentQ.options.find(o => o.isCorrect);
-                    if (optText === correctOpt.text) {
-                        btn.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700');
-                        btn.querySelector('.opt-icon').innerText = '✓';
-                    }
-                });
-
-                feedbackBox.className = 'w-full max-w-md p-3.5 rounded-xl text-xs font-semibold flex items-center justify-between mb-3 bg-rose-50 text-rose-800 border border-rose-200';
-                feedbackText.innerText = `Chưa đúng! Đáp án là: ${currentQ.targetWord} (${currentQ.targetPinyin})`;
-            }
-
-            feedbackBox.classList.remove('hidden');
-        }
-
-        function handleQuizNext() {
-            state.currentQuizIndex++;
-            if (state.currentQuizIndex < state.quizQuestions.length) {
-                renderCurrentQuestion();
-            } else {
-                showQuizResults();
-            }
-        }
-
-        function showQuizResults() {
-            document.getElementById('quizPlayArea').classList.add('hidden');
-            document.getElementById('quizResultArea').classList.remove('hidden');
-            const total = state.quizQuestions.length;
-            const score = state.quizScore;
-            const accuracy = Math.round((score / total) * 100);
-            document.getElementById('quizFinalScore').innerText = `${score}/${total}`;
-            document.getElementById('quizAccuracy').innerText = `${accuracy}%`;
-        }
-
-        // ----------------------------------------------------
-        // 12. KHỞI TẠO BẮT ĐẦU ỨNG DỤNG
-        // ----------------------------------------------------
-        function initApp() {
-            AudioService.init();
-
-            // Tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
-            });
-
-            // Tìm kiếm
-            document.getElementById('btnSearch').addEventListener('click', handleSearch);
-            document.getElementById('userInput').addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') handleSearch();
-            });
-
-            // Tự gợi ý ứng viên khi gõ Pinyin
-            document.getElementById('userInput').addEventListener('input', (e) => {
-                const val = e.target.value.trim().toLowerCase();
-                clearTimeout(state.debounceTimer);
-                if (!val) {
-                    document.getElementById('candidateContainer').classList.add('hidden');
-                    return;
-                }
-                if (!/[\u4e00-\u9fa5]/.test(val)) {
-                    state.debounceTimer = setTimeout(() => {
-                        const clean = normalizePinyinInput(val);
-                        const candidates = [];
-                        if (DICTIONARY.phrases[clean]) candidates.push(DICTIONARY.phrases[clean].word);
-                        if (DICTIONARY.syllables[clean]) candidates.push(...DICTIONARY.syllables[clean]);
-                        if (candidates.length > 0) renderCandidates(candidates);
-                    }, 150);
-                }
-            });
-
-            // Nút cụm từ gợi ý nhanh
-            document.querySelectorAll('.quick-btn').forEach(b => {
-                b.addEventListener('click', () => {
-                    const w = b.getAttribute('data-word');
-                    document.getElementById('userInput').value = w;
-                    loadWordObject(w);
-                });
-            });
-
-            // Phát âm cả cụm từ
-            document.getElementById('btnAudioWord').addEventListener('click', () => {
-                AudioService.speak(state.currentWordObj.word);
-            });
-
-            // Lưu cụm từ vào LocalStorage (Object Storage)
-            document.getElementById('btnSaveWord').addEventListener('click', handleSaveCurrentWord);
-
-            // Tự cập nhật meaning khi người dùng gõ vào ô input meaning
-            document.getElementById('inputMeaning').addEventListener('change', (e) => {
-                const newMeaning = e.target.value;
-                state.currentWordObj.meaning = newMeaning;
-                if (StorageService.isSaved(state.currentWordObj.word)) {
-                    StorageService.updateMeaning(state.currentWordObj.word, newMeaning);
-                }
-            });
-
-            // Nút Chạy lại nét & Tự tập viết
-            document.getElementById('btnReplay').addEventListener('click', () => {
-                resetQuizButtonUI();
-                playInfiniteAnimation(state.currentChar);
-            });
-
-            document.getElementById('btnQuiz').addEventListener('click', toggleInteractiveWritingQuiz);
-
-            document.getElementById('btnToggleOutline').addEventListener('click', () => {
-                if (!state.writer) return;
-                state.outlineVisible = !state.outlineVisible;
-                if (state.outlineVisible) {
-                    state.writer.showOutline();
-                    document.getElementById('outlineStatusText').innerText = 'Ẩn nét mờ';
-                } else {
-                    state.writer.hideOutline();
-                    document.getElementById('outlineStatusText').innerText = 'Hiện nét mờ';
-                }
-            });
-
-            // Tốc độ nét
-            document.querySelectorAll('.speed-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.speed-btn').forEach(b => {
-                        b.classList.remove('bg-white', 'text-blue-600', 'shadow-2xs');
-                        b.classList.add('text-slate-600');
-                    });
-                    btn.classList.add('bg-white', 'text-blue-600', 'shadow-2xs');
-                    btn.classList.remove('text-slate-600');
-                    state.strokeSpeed = parseFloat(btn.getAttribute('data-speed')) || 1;
-                    loadActiveCharToWriter();
-                });
-            });
-
-            // Tab 2 Actions
-            document.getElementById('btnAddSampleWords').addEventListener('click', loadSampleWords);
-            document.getElementById('btnClearAllSaved').addEventListener('click', () => {
-                if (confirm('Bạn có chắc muốn xóa tất cả từ đã lưu trong LocalStorage?')) {
-                    StorageService.clearAll();
-                    renderSavedWordsList();
-                    updateSaveButtonUI();
-                }
-            });
-
-            // Tab 3 Quiz Actions
-            document.getElementById('btnQuizNext').addEventListener('click', handleQuizNext);
-            document.getElementById('btnQuizRestart').addEventListener('click', initReviewQuiz);
-            document.getElementById('btnQuizLoadSample').addEventListener('click', () => {
-                loadSampleWords();
-                initReviewQuiz();
-            });
-
-            // Tải từ mặc định ban đầu: "你好"
-            loadWordObject('你好');
-            updateSavedBadgeCount();
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
-        } else {
-            initApp();
-        }
-    })();
     </script>
 </body>
 </html>
