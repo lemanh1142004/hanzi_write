@@ -1,0 +1,13 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "hanzilab",
+  "orientation": "any",
+  "scope": "/hanzi_write/",
+  "short_name": "Hanzi",
+  "start_url": "/hanzi_write/",
+  "theme_color": "#ffffff",
+  "id": "/hanzi_write/",
+  "description": "Ứng dụng luyện viết chữ Hán cá nhân"
+}
