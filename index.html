@@ -666,7 +666,10 @@
             quizScore: 0,
             quizAnswered: false,
 
-            debounceTimer: null
+            debounceTimer: null,
+            // Quản lý animation & bộ đếm thời gian an toàn
+            animTimeoutId: null,
+            animSessionId: 0
         };
 
         // ----------------------------------------------------
@@ -688,12 +691,16 @@
                 if (state.writer && !state.isQuizWritingActive) {
                     playInfiniteAnimation(state.currentChar);
                 }
-            } else if (tabName === 'saved') {
-                document.getElementById('sectionSaved').classList.remove('hidden');
-                renderSavedWordsList();
-            } else if (tabName === 'quiz') {
-                document.getElementById('sectionQuiz').classList.remove('hidden');
-                initReviewQuiz();
+            } else {
+                // Tạm dừng animation ngầm khi đang ở tab khác (Từ đã lưu hoặc Quiz) để giải phóng CPU và tránh làm đơ giao diện
+                stopCurrentAnimation();
+                if (tabName === 'saved') {
+                    document.getElementById('sectionSaved').classList.remove('hidden');
+                    renderSavedWordsList();
+                } else if (tabName === 'quiz') {
+                    document.getElementById('sectionQuiz').classList.remove('hidden');
+                    initReviewQuiz();
+                }
             }
         };
 
@@ -783,8 +790,25 @@
             });
         }
 
+        // Dừng triệt để mọi tiến trình animation và bộ đếm thời gian ngầm cũ
+        function stopCurrentAnimation() {
+            if (state.animTimeoutId) {
+                clearTimeout(state.animTimeoutId);
+                state.animTimeoutId = null;
+            }
+            state.animSessionId = (state.animSessionId || 0) + 1;
+            if (state.writer) {
+                try {
+                    state.writer.cancelQuiz();
+                } catch (e) {}
+            }
+        }
+
         // Nạp chữ cái đang chọn vào khung vẽ HanziWriter
         function loadActiveCharToWriter() {
+            // 1. DỌN SẠCH TIẾN TRÌNH CHẠY NGẦM CŨ (clearTimeout + hủy animation cũ)
+            stopCurrentAnimation();
+
             const char = state.characters[state.activeCharIndex];
             state.currentChar = char;
 
@@ -798,6 +822,16 @@
 
             const boxWidth = Math.min(targetEl.parentElement.clientWidth - 20, 260);
             const size = Math.max(boxWidth, 200);
+
+            // Ghi nhớ phiên vẽ hiện tại và cờ khởi chạy duy nhất
+            const thisSession = state.animSessionId;
+            let hasStartedOnce = false;
+
+            const triggerPlayOnce = () => {
+                if (hasStartedOnce || state.animSessionId !== thisSession) return;
+                hasStartedOnce = true;
+                playInfiniteAnimation(char);
+            };
 
             try {
                 state.writer = HanziWriter.create('character-target', char, {
@@ -814,8 +848,10 @@
                     showHintAfterMisses: 2,
                     highlightOnComplete: false, // Bỏ hoàn toàn hiệu ứng nháy để không bị dừng 2 giây
                     onLoadCharDataSuccess: () => {
-                        // Tự động viết ngay lập tức khi tải xong nét
-                        playInfiniteAnimation(char);
+                        // Tự động viết ngay lập tức khi tải xong nét nếu chưa khởi chạy
+                        if (state.currentChar === char && state.animSessionId === thisSession) {
+                            triggerPlayOnce();
+                        }
                     },
                     onLoadCharDataError: (err) => {
                         console.error('Lỗi tải dữ liệu nét:', err);
@@ -823,26 +859,41 @@
                     }
                 });
 
-                // Tự động kích hoạt viết ngay lập tức khi chọn hoặc tìm xong
-                playInfiniteAnimation(char);
+                // Kích hoạt ngay lập tức nếu dữ liệu nét đã sẵn sàng
+                triggerPlayOnce();
             } catch (e) {
                 targetEl.innerHTML = `<div class="text-4xl font-serif text-slate-700">${char}</div>`;
             }
         }
 
-        // Tự động lặp lại liên tục từ đầu ngay lập tức (thời gian chờ = 0 giây)
+        // Tự động lặp lại liên tục từ đầu với setTimeout an toàn (được quản lý sạch bằng clearTimeout)
         function playInfiniteAnimation(char) {
+            // Xóa sạch tiến trình hẹn giờ cũ nếu có trước khi bắt đầu lượt mới
+            if (state.animTimeoutId) {
+                clearTimeout(state.animTimeoutId);
+                state.animTimeoutId = null;
+            }
+
             if (!state.writer || state.isQuizWritingActive) return;
             // Dừng vòng lặp nếu người dùng đã chuyển sang chữ khác
             if (state.currentChar !== char) return;
 
+            const currentSession = state.animSessionId;
+
             state.writer.showOutline();
             state.writer.animateCharacter({
                 onComplete: () => {
-                    // Lặp lại vô tận không dừng (thời gian chờ = 0 giây, bỏ hoàn toàn khoảng dừng 2s)
-                    if (!state.isQuizWritingActive && state.currentChar === char) {
-                        playInfiniteAnimation(char);
-                    }
+                    // Kiểm tra session hiện tại: Nếu phiên vẽ đã đổi hoặc đang ở Quiz thì dừng ngay
+                    if (state.animSessionId !== currentSession) return;
+                    if (state.isQuizWritingActive || state.currentChar !== char) return;
+
+                    // Sử dụng setTimeout an toàn đưa lượt vẽ mới vào cuối event loop (Macro-task),
+                    // giúp giải phóng luồng chính để màn hình cảm ứng, vuốt chạm và giao diện mượt mà tuyệt đối không bị đơ!
+                    state.animTimeoutId = setTimeout(() => {
+                        if (state.animSessionId === currentSession && !state.isQuizWritingActive && state.currentChar === char) {
+                            playInfiniteAnimation(char);
+                        }
+                    }, 0);
                 }
             });
         }
@@ -917,10 +968,13 @@
             const quizBtnText = document.getElementById('quizBtnText');
 
             if (state.isQuizWritingActive) {
+                stopCurrentAnimation();
                 state.writer.cancelQuiz();
                 resetQuizButtonUI();
                 playInfiniteAnimation(state.currentChar);
             } else {
+                // Trước khi bắt đầu vẽ cảm ứng, hủy triệt để mọi animation và timeout chạy ngầm để không đơ màn hình
+                stopCurrentAnimation();
                 state.isQuizWritingActive = true;
                 quizContainer.classList.add('quiz-active');
                 btnQuiz.classList.replace('bg-rose-50', 'bg-rose-600');

@@ -136,6 +136,7 @@
         // Nút chạy lại hoạt ảnh nét
         elements.btnReplay.addEventListener('click', () => {
             resetQuizUI();
+            HanziWriterService.stopAnimation();
             HanziWriterService.animate();
         });
 
@@ -360,7 +361,8 @@
             HanziWriterService.cancelQuiz();
             HanziWriterService.animate();
         } else {
-            // Bắt đầu quiz
+            // Bắt đầu quiz: dừng hoạt ảnh và hẹn giờ ngầm để tránh xung đột cảm ứng
+            HanziWriterService.stopAnimation();
             state.isQuizActive = true;
             elements.tianzigeContainer.classList.add('quiz-active');
             elements.quizBtnText.innerText = 'Dừng tập viết';
